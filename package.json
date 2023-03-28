@@ -1,6 +1,6 @@
 {
 	"private": true,
-	"version": "0.7.1",
+	"version": "0.7.2",
 	"scripts": {
 		"test": "jest",
 		"dev": "nodemon",
@@ -17,7 +17,6 @@
 		"@emotion/react": "^11.10.5",
 		"@mantine/core": "^5.9.5",
 		"@mantine/hooks": "^5.9.5",
-		"@next-auth/prisma-adapter": "^1.0.5",
 		"@prisma/client": "^4.6.1",
 		"@types/adm-zip": "^0.5.0",
 		"@types/decompress": "^4.2.4",

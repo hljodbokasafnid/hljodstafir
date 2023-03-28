@@ -4,7 +4,7 @@ import { IOptions, ISocketMessage } from '../../interfaces';
 
 let mainProcess: null | ChildProcessWithoutNullStreams = null;
 
-const ascanius = async (fileName: string, userId: string, sessionID: string, io: Server, options: IOptions) => {
+const ascanius = async (fileName: string, userId: string, io: Server, options: IOptions) => {
 	try {
 		const spawnArgs = [
 			'main.py',
@@ -15,10 +15,10 @@ const ascanius = async (fileName: string, userId: string, sessionID: string, io:
 			options.parentHighlighting.toString(),
 			userId,
 		]
-		if (options.inputType) {
+		if (options?.inputType) {
 			spawnArgs.push(options.inputType);
-			spawnArgs.push(options.skipPageNumbering.toString());
-			spawnArgs.push(options.multipleHeaders.toString())
+			spawnArgs.push(options.skipPageNumbering?.toString());
+			spawnArgs.push(options.multipleHeaders?.toString())
 		}
 		mainProcess = spawn('python', spawnArgs);
 		// process spawn with utf 8 encoding
@@ -33,14 +33,14 @@ const ascanius = async (fileName: string, userId: string, sessionID: string, io:
 					delivered: new Date().toString(),
 					highlight: false,
 				};
-				io.to(sessionID).emit('ascanius-done', doneMessage);
+				io.to(userId).emit('ascanius-done', doneMessage);
 			} else {
 				const message: ISocketMessage = {
 					message: data.toString(),
 					delivered: new Date().toISOString(),
 					highlight: hasError ? 'error' : hasWarning ? 'warning' : false,
 				};
-				io.to(sessionID).emit('ascanius-relay', message);
+				io.to(userId).emit('ascanius-relay', message);
 			}
 		});
 		mainProcess.stderr.setEncoding('utf8');
@@ -51,7 +51,7 @@ const ascanius = async (fileName: string, userId: string, sessionID: string, io:
 				delivered: new Date().toISOString(),
 				highlight: 'error',
 			};
-			io.to(sessionID).emit('ascanius-error', message);
+			io.to(userId).emit('ascanius-error', message);
 		});
 	} catch (error) {
 		console.error(error);

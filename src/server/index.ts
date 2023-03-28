@@ -89,28 +89,14 @@ const ignoreUploadFolderNames = ['temp'];
 			}
 		});
 
-		// temp session database
-		const sessionStore: any = {};
-
-		io.use(async (socket: Socket, next) => {
-			const sessionID = socket.handshake.auth.sessionID;
-			if (sessionID) {
-				// find existing session
-				const session = sessionStore[sessionID];
-				if (session) {
-					return next();
-				}
-			}
-			next();
-		});
-
 		io.on('connection', async (socket: Socket) => {
 			const userId = 'user';
 			await socket.join(userId);
-			socket.emit('user-connected');
-
+			socket.emit('user-connected', userId);
+			console.log('user connected');
+			
 			socket.on('ascanius', (fileName: string, options: IOptions) => {
-				ascanius(fileName, userId, userId, io, options);
+				ascanius(fileName, userId, io, options);
 			});
 
 			socket.on('kill', (data) => {

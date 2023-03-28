@@ -120,7 +120,7 @@ const IndexPage = ({ mapFiles, mapLogs, appVersion }: IProps) => {
 			try {
 				const fileName = res.data.data[0].split('.')[0];
 				const fileExtension = res.data.data[0].split('.')[1];
-				socket.emit('ascanius', fileName, fileExtension, {
+				socket.emit('ascanius', fileName, {
 					language: languageCode,
 					ignoreAside,
 					adjustment: adjusting ? adjustment : 0,
