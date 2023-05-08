@@ -1,9 +1,10 @@
 import React, { SetStateAction } from 'react';
-import { QuestionMark } from 'tabler-icons-react';
+import { ExclamationMark, QuestionMark } from 'tabler-icons-react';
 import SwitchButton from './buttons/SwitchButton';
 import FileInputButton from './FileInputButton';
 import Tooltip from './Tooltip';
 import { LoadingOverlay } from '@mantine/core';
+import Link from 'next/link';
 
 export type UploaderProps = {
 	setLanguageCode: (languageCode: string) => void;
@@ -40,7 +41,7 @@ const Uploader = ({
 	setMultipleHeaders,
 	handleFileUpload,
 	setInputType,
-	uploading
+	uploading,
 }: UploaderProps) => {
 	const [showing, setShowing] = React.useState<'daisy' | 'epub' | 'pdf'>('epub');
 	const handleAdjustmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,6 +319,18 @@ const Uploader = ({
 					</div>
 				)}
 			</div>
+			<div className='flex text-sm px-4'>
+				<ExclamationMark
+					className='bg-primary	flex-none place-self-start justify-self-end text-white rounded-full p-0.5 ml-1'
+					size={18}
+				/>
+				<p className='mb-4 text-left pl-2'>
+					By continuing, you acknowledge that you have read, understood, and agree to the{' '}
+					<Link href='/terms' className='text-primary font-semibold'>
+						terms and conditions.
+					</Link>
+				</p>
+			</div>
 			<FileInputButton
 				label={showing === 'epub' ? 'Upload EPUB' : showing === 'daisy' ? 'Upload Daisy 2.02' : 'Upload PDF'}
 				uploadFileName='files'
@@ -325,8 +338,8 @@ const Uploader = ({
 					showing === 'epub'
 						? 'application/epub+zip'
 						: showing === 'daisy'
-							? 'application/x-zip-compressed'
-							: 'application/pdf'
+						? 'application/x-zip-compressed'
+						: 'application/pdf'
 				}
 				onChange={handleFileUpload}
 				allowMultipleFiles={false}
@@ -334,8 +347,9 @@ const Uploader = ({
 			<LoadingOverlay
 				loaderProps={{ size: 'xl', color: '#103b70', variant: 'bars' }}
 				overlayOpacity={0.5}
-				overlayColor="#a8a29e"
-				visible={uploading} />
+				overlayColor='#a8a29e'
+				visible={uploading}
+			/>
 		</div>
 	);
 };
