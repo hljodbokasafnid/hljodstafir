@@ -3,7 +3,6 @@ import re
 import random
 import math
 import warnings
-import sys
 from scripts.logger import Logger
 from config import Config
 
@@ -69,6 +68,11 @@ def valid_id(css_id):
     pattern = re.compile('hix[0-9]+|d[0-9]+e[0-9]+|block_[0-9]+')
     return bool(pattern.match(str(css_id)))
 
+def valid_class(css_class):
+    if Config.skip_pagenums:
+        if css_class == 'pagenum':
+            return False
+    return True
 
 def markup(text_files: list, logger: Logger):
     """Adds span for each sentence it detects in the paragraph and outputs the file."""
@@ -91,10 +95,10 @@ def markup(text_files: list, logger: Logger):
                 # Get all the paragraphs with valid id
                 if Config.ignore_aside:
                     paragraphs = [tag for tag in soup.find_all(re.compile(
-                        tags_to_look_out_for), id=valid_id) if tag.parent.name != 'aside']
+                        tags_to_look_out_for), id=valid_id, class_=valid_class) if tag.parent.name != 'aside']
                 else:
                     paragraphs = soup.find_all(re.compile(
-                        tags_to_look_out_for), id=valid_id)
+                        tags_to_look_out_for), id=valid_id, class_=valid_class)
                 may_need_manual_check_at_end = soup.find_all(
                     re.compile(tags_to_alert_at_end))
                 if len(may_need_manual_check_at_end) > 0:
@@ -116,7 +120,7 @@ def markup(text_files: list, logger: Logger):
                 for p_index, p in enumerate(paragraphs):
                     # Check for subparagraphs (Evil thing)
                     subparagraphs = BeautifulSoup(str(p.contents), 'html.parser').find_all(
-                        re.compile('p|li|td|th|dt|dd'), id=valid_id)
+                        re.compile('p|li|td|th|dt|dd'), id=valid_id, class_=valid_class)
                     sentences = ''
                     if subparagraphs:
                         # Find all links in the subparagraphs
@@ -145,7 +149,7 @@ def markup(text_files: list, logger: Logger):
                 # Write out processed text
                 with open(f'./{Config.upload_folder}{Config.folder_name}/{Config.location}{text_file}', 'w', encoding='utf8') as f:
                     f.write(soup.decode("utf8"))
-    except Exception as e:
+    except Exception as error:
         logger.print_and_flush(
-            'ERROR: Processing file {} failed with error: {}'.format(current_text_file, e))
+            f'ERROR: Processing file {current_text_file} failed with error: {error}')
         return False

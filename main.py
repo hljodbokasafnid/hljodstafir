@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from scripts.adjust_smil_files import adjust_smil_files
 # from scripts.check_audio_length import check_audio_length
@@ -19,10 +20,10 @@ from scripts.logger import Logger
 from scripts.daisy import handle_daisy_input
 from scripts.pdftoepub import handle_pdf_input
 from config import Config
-import sys
 
 if __name__ == "__main__":
     MP3_MAX_LENGTH = 30
+    error_has_been_logged = False
     # Currently if the computer running the script is not a linux machine,
     # the script might stall on audio files longer than 30~ minutes.
     try:
@@ -35,7 +36,7 @@ if __name__ == "__main__":
             logger.print_and_flush('WARNING: Language not supported')
         logger.print_and_flush(
             f"Language: {languages[Config.language_code.upper()]}")
-        error_has_been_logged = False
+        
         if (Config.ignore_aside):
             logger.print_and_flush(f"Ignoring Aside/Image Text")
         
@@ -49,7 +50,6 @@ if __name__ == "__main__":
 
         extract_epub()
         Config.package_opf, Config.location = get_package_opf(logger)
-        logger.print_and_flush(Config.location)
         if not Config.package_opf:
             raise Exception(
                 "Could not find package.opf, Not a valid EPUB File.\nPlease fix, refresh and try again.")

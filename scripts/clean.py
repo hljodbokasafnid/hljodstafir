@@ -10,13 +10,13 @@ from scripts.get_line_number import get_line_number
 def clean(text_files, logger: Logger):
     """Cleans the text files for aeneas to correctly force align text and audio."""
     def is_sentence_or_h1(css_class):
-            # If the sentence has the class="ignore" then it will not be included (only needed when some text is not read)
-            return (css_class is None or css_class == "sentence" or css_class == "title" or css_class == "page-normal") and css_class != "ignore"
+        # If the sentence has the class="ignore" then it will not be included (only needed when some text is not read)
+        return (css_class is None or css_class == "sentence" or css_class == "title" or css_class == "page-normal") and css_class != "ignore"
 
     def has_id_or_not(css_id):
         pattern = re.compile("h[0-9]_[0-9]|hix[0-9]+|[a-z]+_[0-9]+|page-[0-9]+")
         return css_id is None or bool(pattern.match(str(css_id)))
-    
+
     def check_for_text_outside_markup(text_file: str, text: str, logger: Logger, errors: list):
         """
         Deletes from body all tags and its contents and checks if soup is empty,
