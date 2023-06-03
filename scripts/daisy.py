@@ -111,7 +111,3 @@ def handle_daisy_input(logger: Logger):
         remove_files(logger)
         logger.add_to_log_end(f"ERROR: {e}")
         raise
-
-
-if __name__ == "__main__":
-    handle_daisy_input()

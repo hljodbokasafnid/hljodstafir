@@ -153,7 +153,7 @@ def generate_book_chapters(pdf_dict: dict, book_title: str, filename: str, desti
             content += f"""<h3 id="{value['id']}">{value['text']}</h3>\n"""
         elif value['type'] == 'p':
             content += f"""<p>{value['text']}</p>\n"""
-        elif value['type'] == 'div' and Config.skip_pdf_pages == False:
+        elif value['type'] == 'div' and Config.skip_pagenums == False:
             content += f"""<div class="{value['class']}" epub:type="{value['epub:type']}" id="page-{value['page']}" title="{value['title']}" />\n"""
     written_file_paths = write_chapter_to_file(
         content, book_title, filename, chapter_counter, written_file_paths, destination)
@@ -299,7 +299,7 @@ def handle_pdf_input(logger: Logger):
             Config.title = 'xxxxx'
 
         logger.print_and_flush('Generating EPUB...')
-        if (Config.skip_pdf_pages == True):
+        if (Config.skip_pagenums == True):
             logger.print_and_flush('Skipping PDF page breaks...')
         generate_nav(pdf_dict, Config.title, filename, temp_destination)
         content_file_names = generate_book_chapters(

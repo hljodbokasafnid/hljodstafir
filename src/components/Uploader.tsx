@@ -1,10 +1,12 @@
-import React, { SetStateAction } from 'react';
-import { ExclamationMark, QuestionMark } from 'tabler-icons-react';
+import React from 'react';
 import SwitchButton from './buttons/SwitchButton';
 import FileInputButton from './FileInputButton';
 import Tooltip from './Tooltip';
 import { LoadingOverlay } from '@mantine/core';
+import OptionalSetting from './OptionalSetting';
+import { ExclamationMark } from 'tabler-icons-react';
 import Link from 'next/link';
+import useLocalStorage from '../hooks/useLocalStorage';
 
 export type UploaderProps = {
 	setLanguageCode: (languageCode: string) => void;
@@ -44,6 +46,23 @@ const Uploader = ({
 	uploading,
 }: UploaderProps) => {
 	const [showing, setShowing] = React.useState<'daisy' | 'epub' | 'pdf'>('epub');
+	const [settingsEpub, setSettingsEpub] = useLocalStorage('settingEpub', {
+		adjusting: false,
+		adjustment: 125,
+		ignoreAside: false,
+		skipPageNumbering: false,
+		parentHighlighting: false,
+	});
+	const [settingsDaisy, setSettingsDaisy] = useLocalStorage('settingDaisy', {
+		adjusting: false,
+		adjustment: 125,
+		ignoreAside: false,
+		skipPageNumbering: false,
+		multipleHeaders: false,
+	});
+	const [settingsPdf, setSettingsPdf] = useLocalStorage('settingPdf', {
+		skipPageNumbering: true,
+	});
 	const handleAdjustmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		// only allow values between 0 and 10000
 		const value = parseInt(e.target.value, 10);
@@ -59,6 +78,46 @@ const Uploader = ({
 	};
 
 	const handleSwitch = (show: 'daisy' | 'epub' | 'pdf') => {
+		if (showing === 'epub') {
+			setSettingsEpub({
+				adjusting,
+				adjustment,
+				ignoreAside,
+				skipPageNumbering,
+				parentHighlighting,
+			});
+		}
+		if (showing === 'daisy') {
+			setSettingsDaisy({
+				adjusting,
+				adjustment,
+				ignoreAside,
+				skipPageNumbering,
+				multipleHeaders,
+			});
+		}
+		if (showing === 'pdf') {
+			setSettingsPdf({
+				skipPageNumbering,
+			});
+		}
+		if (show === 'epub') {
+			setAdjusting(settingsEpub.adjusting);
+			setAdjustment(settingsEpub.adjustment);
+			setIgnoreAside(settingsEpub.ignoreAside);
+			setSkipPageNumbering(settingsEpub.skipPageNumbering);
+			setParentHighlighting(settingsEpub.parentHighlighting);
+		}
+		if (show === 'daisy') {
+			setAdjusting(settingsDaisy.adjusting);
+			setAdjustment(settingsDaisy.adjustment);
+			setIgnoreAside(settingsDaisy.ignoreAside);
+			setSkipPageNumbering(settingsDaisy.skipPageNumbering);
+			setMultipleHeaders(settingsDaisy.multipleHeaders);
+		}
+		if (show === 'pdf') {
+			setSkipPageNumbering(settingsPdf.skipPageNumbering);
+		}
 		setShowing(show);
 		setInputType(show === 'daisy' ? 'daisy' : show === 'pdf' ? 'pdf' : undefined);
 	};
@@ -149,24 +208,15 @@ const Uploader = ({
 							</Tooltip>
 						</div>
 						<div className='flex flex-col rounded-sm relative milliseconds'>
-							<div className='flex gap-2 place-items-center rounded-sm'>
-								<input
-									className='w-4 h-4 accent-primary'
-									checked={adjusting}
-									onChange={() => setAdjusting(!adjusting)}
-									type='checkbox'
-									id='adjusting'
-								/>
-								<label className='flex font-medium' htmlFor='adjustment'>
-									Adjust highlighting
-									<Tooltip text='Highlighting of text will be adjusted by x ms, larger number will make the highlighting occur sooner.'>
-										<QuestionMark
-											className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-											size={18}
-										/>
-									</Tooltip>
-								</label>
-							</div>
+						<OptionalSetting
+								id={'adjusting'}
+								label={'Adjust highlighting'}
+								tooltip={
+									'Highlighting of text will be adjusted by x ms, larger number will make the highlighting occur sooner.'
+								}
+								settingChecked={adjusting}
+								setSettingChecked={setAdjusting}
+							/>
 							<input
 								className='flex border-2 focus:outline-none gap-2 place-items-center place-content-center rounded-sm px-2 pr-8 appearance-none'
 								onChange={handleAdjustmentChange}
@@ -175,45 +225,29 @@ const Uploader = ({
 								id='adjustment'
 							/>
 						</div>
-						<div className='flex gap-2 place-items-center rounded-sm'>
-							<input
-								className='w-4 h-4 accent-primary'
-								checked={ignoreAside}
-								onChange={() => setIgnoreAside(!ignoreAside)}
-								type='checkbox'
-								id='ignoreAside'
-							/>
-							<label className='flex font-medium' htmlFor='ignoreAside'>
-								Ignore Image Text
-								<Tooltip
-									text='Image text placed inside of &lt;aside&gt; is not read in book and therefore should be ignored
-													by hljóðstafir.'
-								>
-									<QuestionMark
-										className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-										size={18}
-									/>
-								</Tooltip>
-							</label>
-						</div>
-						<div className='flex gap-2 place-items-center rounded-sm'>
-							<input
-								className='w-4 h-4 accent-primary'
-								checked={parentHighlighting}
-								onChange={() => setParentHighlighting(!parentHighlighting)}
-								type='checkbox'
-								id='parentHighlighting'
-							/>
-							<label className='flex font-medium' htmlFor='parentHighlighting'>
-								Sentence & Paragraph Highlighting
-								<Tooltip text='Paragraphs are highlighted simultaneously if more than one sentence is present.'>
-									<QuestionMark
-										className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-										size={18}
-									/>
-								</Tooltip>
-							</label>
-						</div>
+						<OptionalSetting
+							id={'ignoreAside'}
+							label={'Ignore Image Text'}
+							tooltip={
+								'Image text placed inside of &lt;aside&gt; is not read in book and therefore should be ignored by hljóðstafir.'
+							}
+							settingChecked={ignoreAside}
+							setSettingChecked={setIgnoreAside}
+						/>
+						<OptionalSetting
+							id={'skipPageNumbering'}
+							label={'Skip numbering pages'}
+							tooltip={'Resulting EPUB will not have page numbers.'}
+							settingChecked={skipPageNumbering}
+							setSettingChecked={setSkipPageNumbering}
+						/>
+						<OptionalSetting
+							id={'parentHighlighting'}
+							label={'Sentence & Paragraph Highlighting'}
+							tooltip={'Paragraphs are highlighted simultaneously if more than one sentence is present.'}
+							settingChecked={parentHighlighting}
+							setSettingChecked={setParentHighlighting}
+						/>
 					</div>
 				)}
 				{showing === 'daisy' && (
@@ -224,24 +258,15 @@ const Uploader = ({
 							</Tooltip>
 						</div>
 						<div className='flex flex-col rounded-sm relative milliseconds'>
-							<div className='flex gap-2 place-items-center rounded-sm'>
-								<input
-									className='w-4 h-4 accent-primary'
-									checked={adjusting}
-									onChange={() => setAdjusting(!adjusting)}
-									type='checkbox'
-									id='adjusting'
-								/>
-								<label className='flex font-medium' htmlFor='adjustment'>
-									Adjust highlighting
-									<Tooltip text='Highlighting of text will be adjusted by x ms, larger number will make the highlighting occur sooner.'>
-										<QuestionMark
-											className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-											size={18}
-										/>
-									</Tooltip>
-								</label>
-							</div>
+						<OptionalSetting
+								id={'adjusting'}
+								label={'Adjust highlighting'}
+								tooltip={
+									'Highlighting of text will be adjusted by x ms, larger number will make the highlighting occur sooner.'
+								}
+								settingChecked={adjusting}
+								setSettingChecked={setAdjusting}
+							/>
 							<input
 								className='flex border-2 focus:outline-none gap-2 place-items-center place-content-center rounded-sm px-2 pr-8 appearance-none'
 								onChange={handleAdjustmentChange}
@@ -250,45 +275,29 @@ const Uploader = ({
 								id='adjustment'
 							/>
 						</div>
-						<div className='flex gap-2 place-items-center rounded-sm'>
-							<input
-								className='w-4 h-4 accent-primary'
-								checked={ignoreAside}
-								onChange={() => setIgnoreAside(!ignoreAside)}
-								type='checkbox'
-								id='ignoreAside'
-							/>
-							<label className='flex font-medium' htmlFor='ignoreAside'>
-								Ignore Image Text
-								<Tooltip
-									text='Image text placed inside of &lt;aside&gt; is not read in book and therefore should be ignored
-													by hljóðstafir.'
-								>
-									<QuestionMark
-										className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-										size={18}
-									/>
-								</Tooltip>
-							</label>
-						</div>
-						<div className='flex gap-2 place-items-center rounded-sm'>
-							<input
-								className='w-4 h-4 accent-primary'
-								checked={multipleHeaders}
-								onChange={() => setMultipleHeaders(!multipleHeaders)}
-								type='checkbox'
-								id='multipleHeaders'
-							/>
-							<label className='flex font-medium' htmlFor='multipleHeaders'>
-								Segment text by multiple headers
-								<Tooltip text='Segment text by multiple headers: H1, H2, H3'>
-									<QuestionMark
-										className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-										size={18}
-									/>
-								</Tooltip>
-							</label>
-						</div>
+						<OptionalSetting
+							id={'ignoreAside'}
+							label={'Ignore Image Text'}
+							tooltip={
+								'Image text placed inside of &lt;aside&gt; is not read in book and therefore should be ignored by hljóðstafir.'
+							}
+							settingChecked={ignoreAside}
+							setSettingChecked={setIgnoreAside}
+						/>
+						<OptionalSetting
+							id={'skipPageNumbering'}
+							label={'Skip numbering pages'}
+							tooltip={'Resulting EPUB will not have page numbers.'}
+							settingChecked={skipPageNumbering}
+							setSettingChecked={setSkipPageNumbering}
+						/>
+						<OptionalSetting
+							id={'multipleHeaders'}
+							label={'Segment text by multiple headers'}
+							tooltip={'Segment text by multiple headers: H1, H2, H3'}
+							settingChecked={multipleHeaders}
+							setSettingChecked={setMultipleHeaders}
+						/>
 					</div>
 				)}
 				{showing === 'pdf' && (
@@ -298,24 +307,13 @@ const Uploader = ({
 								Experimental
 							</Tooltip>
 						</div>
-						<div className='flex gap-2 place-items-center rounded-sm'>
-							<input
-								className='w-4 h-4 accent-primary'
-								checked={skipPageNumbering}
-								onChange={() => setSkipPageNumbering(!skipPageNumbering)}
-								type='checkbox'
-								id='skipPageNumbering'
-							/>
-							<label className='flex font-medium' htmlFor='skipPageNumbering'>
-								Skip numbering pages
-								<Tooltip text='Resulting EPUB will not have page-breaks as depicted in the input PDF file.'>
-									<QuestionMark
-										className='bg-slate-800 hover:bg-slate-700 text-white place-self-center rounded-full p-0.5 ml-1'
-										size={18}
-									/>
-								</Tooltip>
-							</label>
-						</div>
+						<OptionalSetting
+							id={'skipPageNumbering'}
+							label={'Skip page-break numbering'}
+							tooltip={'Resulting EPUB will not have page-breaks as depicted in the input PDF file.'}
+							settingChecked={skipPageNumbering}
+							setSettingChecked={setSkipPageNumbering}
+						/>
 					</div>
 				)}
 			</div>

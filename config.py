@@ -18,7 +18,7 @@ class Config:
     adjustment: int = 100
     parent_highlighting: bool = False
     input_type: str = None
-    skip_pdf_pages: bool = False
+    skip_pagenums: bool = False
     multiple_headers: bool = False
 
     def parse_args(self, args):
@@ -34,7 +34,7 @@ class Config:
             raise Exception("No userID was provided")
         self.userID: str = args[6] if len(args) >= 7 else None
         self.input_type: str = args[7] if len(args) >= 8 else None
-        self.skip_pdf_pages: str = args[8] == "true" if len(
+        self.skip_pagenums: str = args[8] == "true" if len(
             args) >= 9 else False
         self.multiple_headers: bool = args[9] == "true" if len(
             args) >= 10 else False

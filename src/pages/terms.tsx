@@ -29,7 +29,7 @@ const Terms = () => {
 
 				<h2>Description of Services</h2>
 				<p>
-					Our website provides users with access to [insert description of services]. We may also offer additional
+					Our website provides users with access to access to automation that creates full-text audio books as well as creating epub's from pdf's. We may also offer additional
 					services from time to time. You are responsible for obtaining access to our website and services, and for all
 					equipment necessary to access and use our website and services.
 				</p>
@@ -80,12 +80,6 @@ const Terms = () => {
 					You agree to defend, indemnify, and hold us harmless from any and all claims, liabilities, damages, and
 					expenses, including reasonable attorneys' fees and costs, arising out of or in any way connected with your
 					access to or use of our website and services.
-				</p>
-
-				<h2>Governing Law</h2>
-				<p>
-					This Agreement shall be governed by and construed in accordance with the laws of [insert governing law],
-					without giving effect to any principles of conflicts of law.
 				</p>
 
 				<h2>Changes to this Agreement</h2>

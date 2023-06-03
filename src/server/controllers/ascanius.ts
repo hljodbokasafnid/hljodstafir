@@ -15,11 +15,9 @@ const ascanius = async (fileName: string, userId: string, io: Server, options: I
 			options.parentHighlighting.toString(),
 			userId,
 		]
-		if (options?.inputType) {
-			spawnArgs.push(options.inputType);
-			spawnArgs.push(options.skipPageNumbering?.toString());
-			spawnArgs.push(options.multipleHeaders?.toString())
-		}
+		spawnArgs.push(options.inputType ?? 'epub');
+		spawnArgs.push(options.skipPageNumbering.toString());
+		spawnArgs.push(options.multipleHeaders.toString())
 		mainProcess = spawn('python', spawnArgs);
 		// process spawn with utf 8 encoding
 		mainProcess.stdout.setEncoding('utf8');

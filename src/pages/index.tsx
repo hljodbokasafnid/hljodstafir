@@ -36,7 +36,7 @@ const IndexPage = ({ mapFiles, mapLogs, appVersion }: IProps) => {
 	const [parentHighlighting, setParentHighlighting] = useState<boolean>(false);
 	const [inputType, setInputType] = useState<'daisy' | 'pdf' | undefined>(undefined);
 	const [adjustment, setAdjustment] = useState<number>(125);
-	const [skipPageNumbering, setSkipPageNumbering] = useState<boolean>(true);
+	const [skipPageNumbering, setSkipPageNumbering] = useState<boolean>(false);
 	const [multipleHeaders, setMultipleHeaders] = useState<boolean>(false);
 	// const [longerAudio, setLongerAudio] = useState<boolean>(false);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -127,7 +127,7 @@ const IndexPage = ({ mapFiles, mapLogs, appVersion }: IProps) => {
 					parentHighlighting,
 					inputType,
 					skipPageNumbering,
-					multipleHeaders,
+					multipleHeaders
 				});
 			} catch (error) {
 				console.error(error);
